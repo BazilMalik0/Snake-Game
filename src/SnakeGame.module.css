@@ -1,0 +1,106 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #0d0221; /* Deep dark purple/blue */
+  font-family: "Courier New", Courier, monospace;
+  color: #00f2ff;
+}
+
+.title {
+  font-size: 2.5rem;
+  text-shadow: 0 0 10px #00f2ff, 0 0 20px #00f2ff;
+  margin-bottom: 10px;
+}
+
+.score {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #fff;
+  text-shadow: 0 0 5px #00f2ff;
+}
+.scoreContainer {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 10px;
+}
+
+.highScore {
+  font-size: 1.5rem;
+  color: #ffcc00; /* Gold color for high score */
+  text-shadow: 0 0 5px #ffcc00;
+}
+
+.overlayText {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: bold;
+  font-size: 2rem;
+  text-shadow: 0 0 10px currentColor;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Background theme classes */
+.matrixBg {
+  background-color: #000a00 !important;
+}
+.spaceBg {
+  background-color: #050510 !important;
+}
+.canvasContainer {
+  position: relative;
+  padding: 10px;
+  border: 4px solid #00f2ff;
+  box-shadow: 0 0 20px #00f2ff, inset 0 0 20px #00f2ff;
+  border-radius: 8px;
+  background-color: #000;
+}
+/* Add this to your existing CSS file */
+
+.wallHit {
+  border-color: #ff0000 !important;
+  box-shadow: 0 0 25px #ff0000, inset 0 0 15px #ff0000 !important;
+  transition: all 0.1s ease-in;
+}
+canvas {
+  display: block;
+}
+
+.controls {
+  margin-top: 25px;
+  display: flex;
+  gap: 15px;
+}
+
+.select,
+.button {
+  background: transparent;
+  border: 2px solid #00f2ff;
+  color: #00f2ff;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+.select {
+  background-color: #1a0b2e;
+}
+
+.button:hover {
+  background-color: #00f2ff;
+  color: #000;
+  box-shadow: 0 0 15px #00f2ff;
+}
+
+.select:focus {
+  outline: none;
+  box-shadow: 0 0 10px #00f2ff;
+}
