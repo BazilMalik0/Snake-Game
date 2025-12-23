@@ -3,13 +3,10 @@ import styles from "./SnakeGame.module.css";
 
 const GRID_SIZE = 20;
 const CANVAS_SIZE = 400;
-const INITIAL_SNAKE = [
-  { x: 10, y: 10 },
-  { x: 10, y: 11 },
-  { x: 10, y: 12 },
-];
+// Updated to a single point so you can move any direction at start without self-collision
+const INITIAL_SNAKE = [{ x: 10, y: 10 }];
 const INITIAL_APPLE = { x: 15, y: 15 };
-const INITIAL_DIRECTION = { x: 0, y: 0 }; // 1. Start stopped
+const INITIAL_DIRECTION = { x: 0, y: 0 };
 
 const SnakeGame = () => {
   const canvasRef = useRef(null);
@@ -18,19 +15,17 @@ const SnakeGame = () => {
   const [direction, setDirection] = useState(INITIAL_DIRECTION);
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(
-    localStorage.getItem("snakeHighScore") || 0 // 4. Load High Score
+    localStorage.getItem("snakeHighScore") || 0
   );
   const [gameOver, setGameOver] = useState(false);
-  const [isPaused, setIsPaused] = useState(false); // 2. Pause state
+  const [isPaused, setIsPaused] = useState(false);
   const [bgType, setBgType] = useState("sci");
   const [collisionType, setCollisionType] = useState(null);
 
   const processedTurn = useRef(false);
 
-  // Helper to check if the game has actually started moving
   const isGameActive = direction.x !== 0 || direction.y !== 0;
 
-  // Handle High Score Saving
   useEffect(() => {
     if (score > highScore) {
       setHighScore(score);
@@ -38,45 +33,46 @@ const SnakeGame = () => {
     }
   }, [score, highScore]);
 
-  // Handle Keyboard Inputs
+  // Handle Keyboard Inputs - Updated for omni-directional start
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (processedTurn.current || gameOver) return;
 
-      // 2. Toggle Pause with 'p' or Space (Only if game is active)
       if ((e.key === "p" || e.key === " ") && isGameActive) {
         setIsPaused((prev) => !prev);
         return;
       }
 
-      // Handle Arrow Keys
       if (e.key.startsWith("Arrow")) {
-        // 2. Auto-resume if an arrow is pressed while paused
         if (isPaused) {
           setIsPaused(false);
         }
 
         switch (e.key) {
           case "ArrowUp":
-            if (direction.y === 0) {
+            // Allow if not moving down
+            if (direction.y !== 1) {
               setDirection({ x: 0, y: -1 });
               processedTurn.current = true;
             }
             break;
           case "ArrowDown":
-            if (direction.y === 0) {
+            // Allow if not moving up
+            if (direction.y !== -1) {
               setDirection({ x: 0, y: 1 });
               processedTurn.current = true;
             }
             break;
           case "ArrowLeft":
-            if (direction.x === 0) {
+            // Allow if not moving right
+            if (direction.x !== 1) {
               setDirection({ x: -1, y: 0 });
               processedTurn.current = true;
             }
             break;
           case "ArrowRight":
-            if (direction.x === 0) {
+            // Allow if not moving left
+            if (direction.x !== -1) {
               setDirection({ x: 1, y: 0 });
               processedTurn.current = true;
             }
@@ -90,12 +86,9 @@ const SnakeGame = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [direction, gameOver, isPaused, isGameActive]);
 
-  // Game Loop
   useEffect(() => {
-    // Don't move if stopped (direction 0,0), game over, or paused
     if (gameOver || isPaused || !isGameActive) return;
 
-    // 3. Dynamic Speed: Starts at 150ms, gets faster as score increases
     const currentSpeed = Math.max(50, 150 - score * 2);
 
     const moveSnake = setInterval(() => {
@@ -145,9 +138,10 @@ const SnakeGame = () => {
     return () => clearInterval(moveSnake);
   }, [direction, apple, gameOver, isPaused, score, isGameActive]);
 
-  // Rendering
   useEffect(() => {
-    const ctx = canvasRef.current.getContext("2d");
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
     let snakeColor, glowColor, appleColor;
@@ -227,12 +221,10 @@ const SnakeGame = () => {
       >
         <canvas ref={canvasRef} width={CANVAS_SIZE} height={CANVAS_SIZE} />
 
-        {/* Only show PAUSED overlay if the game has actually been started */}
         {isPaused && !gameOver && isGameActive && (
           <div className={styles.overlayText}>PAUSED</div>
         )}
 
-        {/* Only show Start message if game hasn't moved yet */}
         {!isGameActive && !gameOver && (
           <div className={styles.overlayText}>Press Arrow to Start</div>
         )}
@@ -258,7 +250,6 @@ const SnakeGame = () => {
         <button
           className={styles.button}
           onClick={() => setIsPaused(!isPaused)}
-          // 1. Disable button if game hasn't started or is over
           disabled={!isGameActive || gameOver}
           style={{
             opacity: !isGameActive || gameOver ? 0.5 : 1,
